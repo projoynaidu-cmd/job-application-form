@@ -2,6 +2,8 @@
 const express = require('express');
 const router = express.Router();
 const Application = require('../models/Application');
+const verifyToken = require('../middleware/authMiddleware');
+router.use(verifyToken); // Protect all dashboard routes
 
 // GET all job applications
 router.get('/', async (req, res) => {
@@ -28,4 +30,5 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+ 
 module.exports = router;

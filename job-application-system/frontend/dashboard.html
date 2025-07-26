@@ -1,110 +1,124 @@
 <!-- frontend/dashboard.html -->
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Admin Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-  </head>
-  <body class="bg-gray-100 p-6 font-sans">
-    <div class="max-w-5xl mx-auto bg-white p-6 rounded shadow">
-      <h1 class="text-2xl font-bold mb-6">📋 Job Applications</h1>
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6 font-sans">
 
-      <!-- 🔍 Search Input -->
-      <input
-        type="text"
-        id="search"
-        placeholder="Search by name, email, or position..."
-        class="mb-4 p-2 w-full border rounded"
-      />
-
-      <div id="appList" class="space-y-6 text-sm text-gray-800"></div>
+  <div class="max-w-5xl mx-auto bg-white p-6 rounded shadow">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-2xl font-bold">📋 Job Applications</h1>
+      <button onclick="logout()" class="bg-gray-200 text-sm px-3 py-1 rounded hover:bg-gray-300">🚪 Logout</button>
     </div>
 
-    <script>
-      let applications = [];
+    <!-- 🔍 Search Input -->
+    <input
+      type="text"
+      id="search"
+      placeholder="Search by name, email, or position..."
+      class="mb-4 p-2 w-full border rounded"
+    />
 
-      // Render application cards
-      function renderApplications(apps) {
-        const container = document.getElementById("appList");
-        if (apps.length === 0) {
-          container.innerHTML = "<p>No applications found.</p>";
-          return;
-        }
+    <div id="appList" class="space-y-6 text-sm text-gray-800"></div>
+  </div>
 
-        container.innerHTML = apps
-          .map(
-            (app) => `
+  <script>
+    const token = localStorage.getItem('admin_token');
+    if (!token) {
+      window.location.href = 'login.html';
+    }
+
+    let applications = [];
+
+    // ✅ Render Applications
+    function renderApplications(apps) {
+      const container = document.getElementById("appList");
+      if (apps.length === 0) {
+        container.innerHTML = "<p>No applications found.</p>";
+        return;
+      }
+
+      container.innerHTML = apps.map((app) => `
         <div class="border p-4 rounded bg-gray-50 shadow-sm">
           <p><strong>🧑 Name:</strong> ${app.fullName}</p>
           <p><strong>📧 Email:</strong> ${app.email}</p>
           <p><strong>📞 Phone:</strong> ${app.phone}</p>
           <p><strong>💼 Position:</strong> ${app.position}</p>
-          <p><strong>📅 Applied On:</strong> ${new Date(
-            app.submittedAt
-          ).toLocaleString()}</p>
-          <p><strong>🔗 LinkedIn:</strong> <a class="text-blue-600 underline" href="${
-            app.linkedin
-          }" target="_blank">Profile</a></p>
-          <p><strong>📄 Resume:</strong> <a class="text-green-600 underline" href="http://localhost:5000/${app.resumePath.replace(
-            "\\",
-            "/"
-          )}" target="_blank">View PDF</a></p>
-
+          <p><strong>📅 Applied On:</strong> ${new Date(app.submittedAt).toLocaleString()}</p>
+          <p><strong>🔗 LinkedIn:</strong> <a class="text-blue-600 underline" href="${app.linkedin}" target="_blank">Profile</a></p>
+          <p><strong>📄 Resume:</strong> <a class="text-green-600 underline" href="http://localhost:5000/${app.resumePath.replace('\\', '/')}" target="_blank">View PDF</a></p>
           <!-- 🗑️ Delete Button -->
-          <button onclick="deleteApp('${
-            app._id
-          }')" class="mt-2 bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
+          <button onclick="deleteApp('${app._id}')" class="mt-2 bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
             🗑️ Delete
           </button>
         </div>
-      `
-          )
-          .join("");
-      }
+      `).join("");
+    }
 
-      // Fetch applications
-      fetch("http://localhost:5000/api/dashboard")
+    // ✅ Fetch Applications (with auth token)
+    fetch("http://localhost:5000/api/dashboard", {
+      headers: {
+        Authorization: "Bearer " + token
+      }
+    })
+    .then((res) => {
+      if (res.status === 401 || res.status === 403) {
+        localStorage.removeItem("admin_token");
+        window.location.href = "login.html";
+      }
+      return res.json();
+    })
+    .then((data) => {
+      applications = data;
+      renderApplications(applications);
+    })
+    .catch((err) => {
+      document.getElementById("appList").innerHTML = '<p class="text-red-600">Failed to load applications.</p>';
+      console.error(err);
+    });
+
+    // 🔍 Live Search
+    document.getElementById("search").addEventListener("input", (e) => {
+      const term = e.target.value.toLowerCase();
+      const filtered = applications.filter(
+        (app) =>
+          app.fullName.toLowerCase().includes(term) ||
+          app.email.toLowerCase().includes(term) ||
+          app.position.toLowerCase().includes(term)
+      );
+      renderApplications(filtered);
+    });
+
+    // 🗑️ Delete Application
+    function deleteApp(id) {
+      if (confirm("Are you sure you want to delete this application?")) {
+        fetch(`http://localhost:5000/api/dashboard/${id}`, {
+          method: "DELETE",
+          headers: {
+            Authorization: "Bearer " + token
+          }
+        })
         .then((res) => res.json())
-        .then((data) => {
-          applications = data;
+        .then(() => {
+          applications = applications.filter((app) => app._id !== id);
           renderApplications(applications);
         })
         .catch((err) => {
-          document.getElementById("appList").innerHTML =
-            '<p class="text-red-600">Failed to load applications.</p>';
+          alert("Failed to delete. Try again.");
           console.error(err);
         });
-
-      // 🔍 Live search
-      document.getElementById("search").addEventListener("input", (e) => {
-        const term = e.target.value.toLowerCase();
-        const filtered = applications.filter(
-          (app) =>
-            app.fullName.toLowerCase().includes(term) ||
-            app.email.toLowerCase().includes(term) ||
-            app.position.toLowerCase().includes(term)
-        );
-        renderApplications(filtered);
-      });
-
-      // 🗑️ Delete application
-      function deleteApp(id) {
-        if (confirm("Are you sure you want to delete this application?")) {
-          fetch(`http://localhost:5000/api/dashboard/${id}`, {
-            method: "DELETE",
-          })
-            .then((res) => res.json())
-            .then(() => {
-              applications = applications.filter((app) => app._id !== id);
-              renderApplications(applications);
-            })
-            .catch((err) => {
-              alert("Failed to delete. Try again.");
-              console.error(err);
-            });
-        }
       }
-    </script>
-  </body>
+    }
+
+    // 🔓 Logout
+    function logout() {
+      localStorage.removeItem("admin_token");
+      window.location.href = "login.html";
+    }
+  </script>
+
+</body>
 </html>
