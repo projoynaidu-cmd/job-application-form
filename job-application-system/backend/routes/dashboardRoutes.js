@@ -14,4 +14,18 @@ router.get('/', async (req, res) => {
   }
 });
 
+
+
+// DELETE /api/dashboard/:id
+router.delete('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    await Application.findByIdAndDelete(id);
+    res.status(200).json({ message: 'Application deleted successfully' });
+  } catch (error) {
+    console.error('Delete error:', error);
+    res.status(500).json({ error: 'Failed to delete application' });
+  }
+});
+
 module.exports = router;
