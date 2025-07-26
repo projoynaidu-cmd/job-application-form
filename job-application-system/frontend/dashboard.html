@@ -59,7 +59,7 @@
     }
 
     // ✅ Fetch Applications (with auth token)
-    fetch("http://localhost:5000/api/dashboard", {
+    fetch("https://job-application-form-p5bq.onrender.com/api/dashboard", {
       headers: {
         Authorization: "Bearer " + token
       }
@@ -95,7 +95,7 @@
     // 🗑️ Delete Application
     function deleteApp(id) {
       if (confirm("Are you sure you want to delete this application?")) {
-        fetch(`http://localhost:5000/api/dashboard/${id}`, {
+        fetch(`https://job-application-form-p5bq.onrender.com/api/dashboard/${id}`, {
           method: "DELETE",
           headers: {
             Authorization: "Bearer " + token
