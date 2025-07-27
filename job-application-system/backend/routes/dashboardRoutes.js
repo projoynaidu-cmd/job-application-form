@@ -6,7 +6,7 @@ const verifyToken = require('../middleware/authMiddleware');
 router.use(verifyToken); // Protect all dashboard routes
 
 // GET all job applications
-router.get('/', async (req, res) => {
+router.get('/', verifyToken, async (req, res) => {
   try {
     const apps = await Application.find().sort({ submittedAt: -1 });
     res.status(200).json(apps);
@@ -19,7 +19,7 @@ router.get('/', async (req, res) => {
 
 
 // DELETE /api/dashboard/:id
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', verifyToken, async (req, res) => {
   try {
     const { id } = req.params;
     await Application.findByIdAndDelete(id);
