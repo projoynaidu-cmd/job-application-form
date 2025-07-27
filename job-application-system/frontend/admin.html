@@ -115,7 +115,7 @@
     function getResumeUrl(resumePath) {
       if (!resumePath) return null;
       try {
-        const baseUrl = 'https://job-application-form-p5bq.onrender.com';
+        const baseUrl = 'https://job-application-form-p5bq.onrender.com/';
         const cleanedPath = resumePath.replace(/\\/g, '/');
         return `${baseUrl}/${cleanedPath}`;
       } catch {
