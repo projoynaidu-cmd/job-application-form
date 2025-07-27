@@ -151,7 +151,7 @@
                   <a href="${app.linkedin}" target="_blank" class="text-blue-600 hover:text-blue-800 p-2 rounded-full hover:bg-blue-50 transition-colors">
                     <i class="fab fa-linkedin"></i>
                   </a>
-                  <a href="http://localhost:5000/${app.resumePath.replace('\\', '/')}" target="_blank" class="text-green-600 hover:text-green-800 p-2 rounded-full hover:bg-green-50 transition-colors">
+                  <a href="https://job-application-form-p5bq.onrender.com/${app.resumePath.replace('\\', '/')}" target="_blank" class="text-green-600 hover:text-green-800 p-2 rounded-full hover:bg-green-50 transition-colors">
                     <i class="fas fa-file-pdf"></i>
                   </a>
                 </div>
@@ -168,7 +168,7 @@
     }
 
     // Fetch Applications (with auth token)
-    fetch("http://localhost:5000/api/dashboard", {
+    fetch("https://job-application-form-p5bq.onrender.com/api/dashboard", {
       headers: {
         Authorization: "Bearer " + token
       }
@@ -219,7 +219,7 @@
     function deleteApp(id) {
       const app = applications.find(a => a._id === id);
       if (confirm(`Are you sure you want to delete ${app.fullName}'s application? This cannot be undone.`)) {
-        fetch(`http://localhost:5000/api/dashboard/${id}`, {
+        fetch(`https://job-application-form-p5bq.onrender.com/api/dashboard/${id}`, {
           method: "DELETE",
           headers: {
             Authorization: "Bearer " + token
