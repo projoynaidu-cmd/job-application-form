@@ -4,7 +4,9 @@ const router = express.Router();
 
 // Login endpoint
 router.post('/login', (req, res) => {
+  
     console.log('req.body:', req.body);
+
   const { email, password } = req.body;
 
   if (
