@@ -49,8 +49,7 @@
           <p><strong>💼 Position:</strong> ${app.position}</p>
           <p><strong>📅 Applied On:</strong> ${new Date(app.submittedAt).toLocaleString()}</p>
           <p><strong>🔗 LinkedIn:</strong> <a class="text-blue-600 underline" href="${app.linkedin}" target="_blank">Profile</a></p>
-          <p><strong>📄 Resume:</strong> <a class="text-green-600 underline" href="http://localhost:5000/${app.resumePath.replace('\\', '/')}" target="_blank">View PDF</a></p>
-          <!-- 🗑️ Delete Button -->
+          <p><strong>📄 Resume:</strong> <a class="text-green-600 underline" href="https://job-application-form-p5bq.onrender.com/${app.resumePath.replace('\\', '/')}" target="_blank">View PDF</a></p>          <!-- 🗑️ Delete Button -->
           <button onclick="deleteApp('${app._id}')" class="mt-2 bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
             🗑️ Delete
           </button>
